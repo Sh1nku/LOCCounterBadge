@@ -1,0 +1,17 @@
+[general]
+port = 20300
+debug = 1
+
+# A repository
+[LOCCounterBadge]
+link = git@github.com:Sh1nku/LOCCounterBadge
+action_github = {
+        "secret": "SECRET"
+    }
+response_shields_v1 = {
+      "schemaVersion": 1,
+      "label": "Lines of Code",
+      "message": "placeholder"
+      "color": "red"
+    }
+
