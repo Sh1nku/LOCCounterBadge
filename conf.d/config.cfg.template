@@ -1,10 +1,12 @@
 [general]
+host = 0.0.0.0
 port = 20300
 debug = 1
 
 # A repository
 [LOCCounterBadge]
 link = git@github.com:Sh1nku/LOCCounterBadge
+branch = master
 action_github = {
         "secret": "SECRET"
     }
