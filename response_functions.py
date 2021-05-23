@@ -16,7 +16,7 @@ def construct_responses(config, memory):
         data = json.loads(config.get(repository, 'response_shields_v1'))
         if not memory.get(repository):
             make_response('Could not get repository LOC', 500)
-        data['message'] = memory[repository]
+        data['message'] = str(memory[repository])
         return make_response(data, 200)
     return response_functions
 
