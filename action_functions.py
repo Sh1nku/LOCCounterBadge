@@ -5,6 +5,7 @@ import os
 
 from flask import Blueprint, make_response, request
 
+import helpers
 from external_processes import clone_repo_if_not_exists, count_lines_of_code, fetch_new_data
 
 
@@ -13,7 +14,9 @@ def construct_actions(config, memory):
 
     @action_functions.route('/<repository>/actions/github', methods=['POST'])
     def github(repository):
-        if response := verify_config_data(repository, 'action_github', config):
+        if response := helpers.verify_config_data(repository, config):
+            return response
+        if response := helpers.verify_config_action(repository, config, 'action_github'):
             return response
         # Verify not forged request
         if not request.headers.get('X-GitHub-Event') or not request.headers.get('X-Hub-Signature') or not request.is_json:
@@ -40,41 +43,14 @@ def construct_actions(config, memory):
         if not (commit := data.get('after')):
             return make_response('Commit not given', 400)
 
-        if not fetch_new_data(repository):
+        if not fetch_new_data(repository, config.get(repository, 'branch')):
             return make_response('could not fetch new data', 500)
-        status, lines = count_lines_of_code(repository, commit)
+        status, lines = count_lines_of_code(repository, config.get(repository, 'branch'))
         if not status:
             return make_response('Error counting lines of code', 500)
-        update_lines_of_code(memory, repository, lines)
+        helpers.update_lines_of_code(memory, repository, lines)
         return make_response('', 200)
 
 
 
     return action_functions
-
-def verify_config_data(repository, action_name, config):
-    if repository not in config:
-        return make_response('Repository "{}" not found'.format(repository), 400)
-    if action_name not in config[repository]:
-        valid_actions = [x.split('action_')[1] for x in config[repository] if x.startswith('action_')]
-        return make_response('This action is not supported for the repository, valid actions are [{}]'.format(', '.join(valid_actions)), 500)
-    if 'branch' not in config[repository]:
-        return make_response('Branch not given in config', 500)
-    if 'link' not in config[repository]:
-        return make_response('Link not given in config', 500)
-
-
-cache_file = 'loc_cache.json'
-
-
-def update_lines_of_code(memory, repository, lines):
-    memory[repository] = lines
-    with open(cache_file, 'w') as f:
-        f.write(json.dumps(memory))
-
-def read_lines_of_code():
-    if not os.path.exists(cache_file):
-        return {}
-    with open(cache_file, 'r') as f:
-        return json.loads(f.read())
-
