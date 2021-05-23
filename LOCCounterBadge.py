@@ -1,3 +1,5 @@
+#!/usr/bin/python3
+
 import configparser
 import os
 import flask
@@ -18,7 +20,7 @@ def parse_config(path, file):
         cfg.read(os.path.join(path, file), encoding='utf-8')
         return cfg
 
-def init_repos(config):
+def init_repos(config, memory):
     for section in [x for x in config.sections() if x != 'general']:
         if response := helpers.verify_config_data(section, config):
             print(response.get_data())
@@ -33,12 +35,13 @@ def init_repos(config):
         if not status:
             print('Error in counting lines of code: {}'.format(section))
             continue
+        helpers.update_lines_of_code(memory, section, loc)
 
 
 config = parse_config('conf.d', 'config.cfg')
 app = flask.Flask(__name__)
-init_repos(config)
 memory = helpers.read_lines_of_code()
+init_repos(config, memory)
 
 construct_exceptions(app)
 app.register_blueprint(construct_responses(config, memory))
