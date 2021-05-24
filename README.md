@@ -20,8 +20,8 @@ You will need the following packages
 
 Please take note that shields.io requires https, so I would recommend running the application through reverse proxy. In apache this can be achieved through this
 ```
-    ProxyPass /LOCCounterBadge http://127.0.0.1:20300/
-    ProxyPassReverse /LOCCounterBadge http://127.0.0.1:20300/
+    ProxyPass /LOCCounterBadge/ http://127.0.0.1:20300/
+    ProxyPassReverse /LOCCounterBadge/ http://127.0.0.1:20300/
 ```
 in my case giving me the endpoint used for this repository as
 ```
