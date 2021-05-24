@@ -10,7 +10,6 @@ User=USER_HERE
 WorkingDirectory=WORKING_DIR_HERE
 ExecStart=/usr/bin/python3 LOCCounterBadge.py
 ProtectSystem=full
-ProtectHome=true
 
 [Install]
 WantedBy=multi-user.target
