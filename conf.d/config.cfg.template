@@ -16,4 +16,9 @@ response_shields_v1 = {
       "message": "placeholder",
       "color": "red"
     }
+response_pybadges = {
+      "left_text": "Lines of Code",
+      "left_color": "gray",
+      "right_color":"red"
+    }
 

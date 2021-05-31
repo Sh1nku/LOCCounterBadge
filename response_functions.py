@@ -1,5 +1,6 @@
 import json
 
+import pybadges
 from flask import Blueprint, make_response
 
 import helpers
@@ -12,11 +13,21 @@ def construct_responses(config, memory):
     def shields_v1(repository):
         if response := helpers.verify_config_response(repository, config, 'response_shields_v1'):
             return response
-        x = config.get(repository, 'response_shields_v1')
         data = json.loads(config.get(repository, 'response_shields_v1'))
         if not memory.get(repository):
             make_response('Could not get repository LOC', 500)
-        data['message'] = str(memory[repository])
+        data['message'] = '{:,}'.format(memory[repository])
         return make_response(data, 200)
+
+    @response_functions.route('/<repository>/responses/pybadges', methods=['GET'])
+    def local(repository):
+        function = 'response_pybadges'
+        if response := helpers.verify_config_response(repository, config, function):
+            return response
+        data = json.loads(config.get(repository, function))
+        if not memory.get(repository):
+            make_response('Could not get repository LOC', 500)
+        ret = pybadges.badge(right_text='{:,}'.format(memory[repository]), **data)
+        return make_response(ret, 200)
     return response_functions
 
