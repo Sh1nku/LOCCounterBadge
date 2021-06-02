@@ -45,7 +45,7 @@ def construct_actions(config, memory):
 
         if not fetch_new_data(repository, config.get(repository, 'branch')):
             return make_response('could not fetch new data', 500)
-        status, lines = count_lines_of_code(repository, config.get(repository, 'branch'))
+        status, lines = count_lines_of_code(repository, config.get(repository, 'branch'), config.get(repository, 'cloc_options', fallback=None))
         if not status:
             return make_response('Error counting lines of code', 500)
         helpers.update_lines_of_code(memory, repository, lines)
