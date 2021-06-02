@@ -1,6 +1,7 @@
 import json
 import os
 import subprocess
+import tempfile
 
 repos_dir = 'repos'
 
@@ -22,8 +23,14 @@ def fetch_new_data(name, branch):
     proc = subprocess.run(['git', '-C', os.path.join(repos_dir, name), 'checkout', 'origin/'+branch])
     return proc.returncode == 0
 
-def count_lines_of_code(name, branch):
-    proc = subprocess.run(['cloc', '--git', 'origin/'+branch, '--sum-one', '--json', os.path.join(repos_dir, name)], capture_output=True)
-    if proc.returncode == 0:
-        return True, json.loads(proc.stdout)['SUM']['code']
-    return False, 0
+def count_lines_of_code(name, branch, options=None):
+    command = ['cloc', '--git', 'origin/'+branch, '--sum-one', '--json', os.path.join(repos_dir, name)]
+    with tempfile.NamedTemporaryFile('w') as tmp:
+        if options:
+            tmp.write(options)
+            tmp.flush()
+            command.extend(['--config', tmp.name])
+        proc = subprocess.run(command, capture_output=True)
+        if proc.returncode == 0:
+            return True, json.loads(proc.stdout)['SUM']['code']
+        return False, 0

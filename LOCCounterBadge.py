@@ -31,7 +31,7 @@ def init_repos(config, memory):
         if not external_processes.fetch_new_data(section, config.get(section, 'branch')):
             print('Could download newest data: {}'.format(section))
             continue
-        status, loc = external_processes.count_lines_of_code(section, config.get(section, 'branch'))
+        status, loc = external_processes.count_lines_of_code(section, config.get(section, 'branch'), config.get(section, 'cloc_options', fallback=None))
         if not status:
             print('Error in counting lines of code: {}'.format(section))
             continue
