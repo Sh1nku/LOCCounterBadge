@@ -17,8 +17,7 @@ def construct_responses(config, memory):
         if not memory.get(repository):
             make_response('Could not get repository LOC', 500)
         data['message'] = '{:,}'.format(memory[repository])
-        return make_response(data, 200)
-
+        return make_response(data, 200, {'Cache-Control': 'no-cache'})
 
     @response_functions.route('/<repository>/responses/pybadges', methods=['GET'])
     def local(repository):
@@ -29,7 +28,7 @@ def construct_responses(config, memory):
         if not memory.get(repository):
             make_response('Could not get repository LOC', 500)
         ret = pybadges.badge(right_text='{:,}'.format(memory[repository]), **data)
-        return Response(response=ret, status=200, mimetype='image/svg+xml')
+        return Response(response=ret, status=200, mimetype='image/svg+xml', headers={'Cache-Control': 'no-cache'})
 
     return response_functions
 

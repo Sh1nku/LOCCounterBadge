@@ -7,7 +7,9 @@ Since it is a self-hosted service, it also supports private repositories, and ot
 ## Installation
 You will need the following packages
 *   `sudo apt install cloc git`
-*   `pip3 install -r requirements.txt`
+*   `pip3 install flask pybadges`
+    * (Unfortunately Flask 2.0x has conflicting dependencies with pybadges 2.2.1, therefore pip won't allow install though a `requirements.txt`.
+      I have not noticed any problems)
 ## Usage
 1. Make `conf.d/config.cfg` out of `conf.d/config.cfg.template`
     * Setup your repositories
