@@ -23,14 +23,24 @@ def fetch_new_data(name, branch):
     proc = subprocess.run(['git', '-C', os.path.join(repos_dir, name), 'checkout', 'origin/'+branch])
     return proc.returncode == 0
 
-def count_lines_of_code(name, branch, options=None):
-    command = ['cloc', '--git', 'origin/'+branch, '--sum-one', '--json', os.path.join(repos_dir, name)]
+
+def count_lines_of_code(name, options=None):
+    commit_hash = get_commit_hash(name)
+    command = ['cloc', '--git', commit_hash, '--sum-one', '--json']
     with tempfile.NamedTemporaryFile('w') as tmp:
         if options:
             tmp.write(options)
             tmp.flush()
             command.extend(['--config', tmp.name])
-        proc = subprocess.run(command, capture_output=True)
+        proc = subprocess.run(command, capture_output=True, cwd=os.path.join(repos_dir, name))
         if proc.returncode == 0:
-            return True, json.loads(proc.stdout)['SUM']['code']
-        return False, 0
+            return commit_hash, json.loads(proc.stdout)['SUM']['code']
+    raise Exception('Could not count LOC for repo: {}'.format(name))
+
+
+def get_commit_hash(name):
+    command = ['git', 'rev-parse', 'HEAD']
+    proc = subprocess.run(command, capture_output=True, cwd=os.path.join(repos_dir, name))
+    if proc.returncode == 0:
+        return proc.stdout.strip().decode('utf-8')
+    return None

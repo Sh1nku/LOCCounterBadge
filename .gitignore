@@ -1,4 +1,4 @@
 conf.d/config.cfg
-__pycache__/*
+__pycache__/
 repos/*
-loc_cache.json
+cache/*
