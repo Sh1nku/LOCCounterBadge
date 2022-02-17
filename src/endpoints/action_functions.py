@@ -5,8 +5,7 @@ import sys
 
 from flask import Blueprint, make_response, request
 
-
-from external_processes import count_lines_of_code, fetch_new_data
+from src.external_processes import fetch_new_data, count_lines_of_code
 
 
 def construct_actions(repositories):
@@ -41,12 +40,9 @@ def construct_actions(repositories):
         if not fetch_new_data(repository.name, repository.branch):
             return make_response('could not fetch new data', 500)
         try:
-            commit_hash, loc = count_lines_of_code(repository.name, repository.cloc_options)
-            with open(repository.cache_file_location, 'w') as f:
-                f.write(json.dumps({
-                    'loc': loc,
-                    'commit_hash': commit_hash
-                }))
+            repository.cache = count_lines_of_code(repository.name, repository.cloc_options)
+            # Updates either the local cache or the cache file
+            repository.get_loc()
         except Exception as e:
             print('Failed in reading lines of code: {}'.format(repository.name), sys.stderr)
             make_response('Could not count lines of code', 500)

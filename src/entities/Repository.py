@@ -4,13 +4,13 @@ import os
 import sys
 
 from src import external_processes
+from src.entities.LocCache import LocCache
 
 
 class Repository:
     def __init__(self, config: configparser.ConfigParser, section: str):
         self.name = section
-        self.commit_hash = None
-        self.loc = None
+        self.cache: LocCache = None
         self.branch = config.get(section, 'branch', fallback=None)
         self.link = config.get(section, 'link', fallback=None)
         self.cloc_options = config.get(section, 'cloc_options', fallback=None)
@@ -32,24 +32,27 @@ class Repository:
                 raise Exception('Could not clone repo: {}'.format(section))
             if not external_processes.fetch_new_data(self.name, self.branch):
                 raise Exception('Could download newest data: {}'.format(section))
-            self.commit_hash, self.loc = \
-                external_processes.count_lines_of_code(section,
-                                                       self.cloc_options)
+            self.cache = external_processes.count_lines_of_code(section, self.cloc_options)
         except Exception as e:
             print(e, file=sys.stderr)
             exit(1)
 
     def get_loc(self):
+        def write_to_file():
+            with open(self.cache_file_location, 'w') as f:
+                f.write(self.cache.toJSON())
         if os.path.exists(self.cache_file_location):
             with open(self.cache_file_location, 'r') as f:
-                tmp = json.loads(f.read())
-                if tmp['commit_hash'] == self.commit_hash:
-                    return self.loc
-                return tmp.loc
+                tmp = LocCache.fromJSON(f.read())
+            if tmp.commit_hash == self.cache.commit_hash:
+                return self.cache.loc
+            else:
+                if self.cache.commit_date > tmp.commit_date:
+                    write_to_file()
+                else:
+                    self.cache = tmp
+            return self.cache.loc
         else:
             with open(self.cache_file_location, 'w') as f:
-                f.write(json.dumps({
-                    'loc': self.loc,
-                    'commit_hash': self.commit_hash
-                }))
-                return self.loc
+                f.write(self.cache.toJSON())
+                return self.cache.loc

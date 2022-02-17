@@ -2,15 +2,12 @@
 
 import configparser
 import os
-import sys
-
 import flask
 
-import external_processes
-from action_functions import construct_actions
-from exceptions import construct_exceptions
-from response_functions import construct_responses
-from src.Repository import Repository
+from src.endpoints.action_functions import construct_actions
+from src.endpoints.exceptions import construct_exceptions
+from src.endpoints.response_functions import construct_responses
+from src.entities.Repository import Repository
 
 
 def parse_config(path, file):
@@ -41,5 +38,6 @@ app.register_blueprint(construct_responses(repositories))
 app.register_blueprint(construct_actions(repositories))
 
 app.config["DEBUG"] = config.getboolean('general', 'debug', fallback=False)
-app.run(port=config.get('general', 'port', fallback=20300),
-        host=config.get('general', 'host', fallback='0.0.0.0'))
+if __name__ == '__main__':
+    app.run(port=config.get('general', 'port', fallback=20300),
+            host=config.get('general', 'host', fallback='0.0.0.0'))

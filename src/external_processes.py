@@ -3,6 +3,8 @@ import os
 import subprocess
 import tempfile
 
+from src.entities.LocCache import LocCache
+
 repos_dir = 'repos'
 
 def clone_repo_if_not_exists(link, name):
@@ -34,12 +36,19 @@ def count_lines_of_code(name, options=None):
             command.extend(['--config', tmp.name])
         proc = subprocess.run(command, capture_output=True, cwd=os.path.join(repos_dir, name))
         if proc.returncode == 0:
-            return commit_hash, json.loads(proc.stdout)['SUM']['code']
+            return LocCache(commit_hash, get_commit_date(name), json.loads(proc.stdout)['SUM']['code'])
     raise Exception('Could not count LOC for repo: {}'.format(name))
 
 
 def get_commit_hash(name):
     command = ['git', 'rev-parse', 'HEAD']
+    proc = subprocess.run(command, capture_output=True, cwd=os.path.join(repos_dir, name))
+    if proc.returncode == 0:
+        return proc.stdout.strip().decode('utf-8')
+    return None
+
+def get_commit_date(name):
+    command = ['git', 'show', '-s', '--format=%ci', 'HEAD']
     proc = subprocess.run(command, capture_output=True, cwd=os.path.join(repos_dir, name))
     if proc.returncode == 0:
         return proc.stdout.strip().decode('utf-8')
