@@ -13,7 +13,7 @@ You will need the following packages
 ## Usage
 1. Make `conf.d/config.cfg` out of `conf.d/config.cfg.template`
     * Setup your repositories
-2. Test that the server works `./LOCCounterBadge.py`
+2. Test that the server works `gunicorn --bind 0.0.0.0:5000 --preload --workers 8 wsgi:app`
     * On startup it should clone the repositories, and shutdown if any errors happen
 3. Create webhooks for your repositories, making sure that the `secret` in the config matches the webhook
     * Every time a push event is registered for the `branch` given in the config, the LoC will be updated
