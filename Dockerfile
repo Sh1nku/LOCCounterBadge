@@ -11,4 +11,4 @@ RUN mkdir ~/.ssh
 RUN ssh-keygen -b 4096 -t rsa -f ~/.ssh/id_rsa -q -N ""
 RUN echo "Host *" >> ~/.ssh/config && echo "  StrictHostKeyChecking no" >> ~/.ssh/config && chmod 600 ~/.ssh/config
 
-CMD ["/home/python/.local/bin/gunicorn", "--bind", "0.0.0.0:80", "--preload", "--workers", "16", "wsgi:app"]
+CMD ["/home/python/.local/bin/gunicorn", "--bind", "0.0.0.0:5000", "--preload", "--workers", "16", "wsgi:app"]
