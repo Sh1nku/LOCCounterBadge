@@ -38,6 +38,3 @@ app.register_blueprint(construct_responses(repositories))
 app.register_blueprint(construct_actions(repositories))
 
 app.config["DEBUG"] = config.getboolean('general', 'debug', fallback=False)
-if __name__ == '__main__':
-    app.run(port=config.get('general', 'port', fallback=20300),
-            host=config.get('general', 'host', fallback='0.0.0.0'))
