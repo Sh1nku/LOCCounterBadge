@@ -7,13 +7,13 @@ Since it is a self-hosted service, it also supports private repositories, and ot
 ## Installation
 You will need the following packages
 *   `sudo apt install cloc git`
-*   `pip3 install flask pybadges`
+*   `pip3 install flask pybadges gunicorn`
     * (Unfortunately Flask 2.0x has conflicting dependencies with pybadges 2.2.1, therefore pip won't allow install though a `requirements.txt`.
       I have not noticed any problems)
 ## Usage
 1. Make `conf.d/config.cfg` out of `conf.d/config.cfg.template`
     * Setup your repositories
-2. Test that the server works `./LOCCounterBadge.py`
+2. Test that the server works `gunicorn --bind 0.0.0.0:5000 --preload --workers 8 wsgi:app`
     * On startup it should clone the repositories, and shutdown if any errors happen
 3. Create webhooks for your repositories, making sure that the `secret` in the config matches the webhook
     * Every time a push event is registered for the `branch` given in the config, the LoC will be updated
