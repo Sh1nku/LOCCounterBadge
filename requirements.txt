@@ -1,3 +1,3 @@
 Flask<3,>=2.0.1
-pybadges<3,>=2.2.1
+pybadges<4,>=3
 gunicorn

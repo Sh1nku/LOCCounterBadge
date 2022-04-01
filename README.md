@@ -7,9 +7,7 @@ Since it is a self-hosted service, it also supports private repositories, and ot
 ## Installation
 You will need the following packages
 *   `sudo apt install cloc git`
-*   `pip3 install flask pybadges gunicorn`
-    * (Unfortunately Flask 2.0x has conflicting dependencies with pybadges 2.2.1, therefore pip won't allow install though a `requirements.txt`.
-      I have not noticed any problems)
+*   `pip3 install -r requirements.txt`
 ## Usage
 1. Make `conf.d/config.cfg` out of `conf.d/config.cfg.template`
     * Setup your repositories
@@ -22,8 +20,8 @@ You will need the following packages
 
 Please take note that shields.io requires https, so I would recommend running the application through reverse proxy. In apache this can be achieved through this
 ```
-    ProxyPass /LOCCounterBadge/ http://127.0.0.1:20300/
-    ProxyPassReverse /LOCCounterBadge/ http://127.0.0.1:20300/
+    ProxyPass /LOCCounterBadge/ http://127.0.0.1:5000/
+    ProxyPassReverse /LOCCounterBadge/ http://127.0.0.1:5000/
 ```
 in my case giving me the endpoint used for this repository as
 ```
