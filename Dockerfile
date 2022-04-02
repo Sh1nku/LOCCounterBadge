@@ -5,7 +5,8 @@ COPY ./ /app
 WORKDIR /app
 RUN chown -R python:python /app
 USER python
-RUN pip3 install flask pybadges gunicorn --no-cache-dir
+RUN pip3 install -r requirements.txt --no-cache-dir
+
 
 RUN mkdir ~/.ssh
 RUN ssh-keygen -b 4096 -t rsa -f ~/.ssh/id_rsa -q -N ""
